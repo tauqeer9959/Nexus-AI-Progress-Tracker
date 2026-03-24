@@ -15,13 +15,17 @@ if (MISSING_CREDS) {
   )
 }
 
+console.log('[NEXUS] Initializing Supabase with URL:', supabaseUrl || 'MISSING');
+
 // Use placeholder URLs to avoid createClient() throwing on empty strings
 export const supabase = createClient(
   supabaseUrl || 'https://placeholder.supabase.co',
   supabaseAnonKey || 'placeholder-key',
   {
     auth: {
-      persistSession: false // Prevents the browser from remembering the login
+      persistSession: true, // Let them stay logged in
+      autoRefreshToken: true,
+      detectSessionInUrl: true
     }
   }
 )

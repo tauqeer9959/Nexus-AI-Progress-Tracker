@@ -12,10 +12,11 @@ const FINAL_URL = supabaseUrl && !supabaseUrl.includes('your-project')
 
 // Hardcoded Anon Key for this project (Safe to be public in frontend)
 // We use a more aggressive check to ignore common placeholders and faulty keys
+// Verified Key matches project ref: ktmyezkkzqscgpmynnql
 const isPlaceholder = !supabaseAnonKey || supabaseAnonKey.includes('your') || supabaseAnonKey.length < 50;
 
 const FINAL_ANON_KEY = isPlaceholder
-  ? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0mXllemkkzqscgpmynnqlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNjU0MDAsImV4cCI6MjA4OTk0MTQwMH0.B5a78LchYU7bXcj_x84jF2D-9vGE5NKcg05FtJXlYEg'
+  ? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0bXllemtrenFzY2dwbXlubnFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNjU0MDAsImV4cCI6MjA4OTk0MTQwMH0.B5a78LchYU7bXcj_x84jF2D-9vGE5NKcg05FtJXlYEg'
   : supabaseAnonKey;
 
 console.log('[NEXUS] Initializing Supabase...');

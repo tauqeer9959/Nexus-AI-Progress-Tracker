@@ -61,11 +61,12 @@ export default function AuthModal({ isOpen, onClose }) {
     setError(null);
     setLoading(true);
     try {
-      if (provider === 'google') await signInWithGoogle();
-      if (provider === 'github') await signInWithGitHub();
+      const { error } = provider === 'google' ? await signInWithGoogle() : await signInWithGitHub();
+      if (error) throw error;
+      // Note: The page will redirect on success, so we don't necessarily need to set loading false here
+      // but in case it doesn't redirect immediately or there's a delay:
     } catch (err) {
       setError(err.message || 'OAuth failed');
-    } finally {
       setLoading(false);
     }
   };

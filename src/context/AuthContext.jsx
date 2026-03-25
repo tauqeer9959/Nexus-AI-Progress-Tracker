@@ -28,8 +28,23 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function fetchProfile(userId) {
-    const { data } = await supabase.from('profiles').select('*').eq('id', userId).single();
-    setProfile(data);
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
+    if (error && error.code === 'PGRST116') {
+      // Profile doesn't exist, create it (likely a new OAuth user)
+      const { data: newData, error: createError } = await supabase
+        .from('profiles')
+        .upsert({ 
+          id: userId, 
+          full_name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User',
+          updated_at: new Date().toISOString() 
+        })
+        .select()
+        .single();
+      
+      if (!createError) setProfile(newData);
+    } else {
+      setProfile(data);
+    }
     setLoading(false);
   }
 
@@ -50,11 +65,17 @@ export function AuthProvider({ children }) {
   }
 
   async function signInWithGoogle() {
-    await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } });
+    return await supabase.auth.signInWithOAuth({ 
+      provider: 'google', 
+      options: { redirectTo: window.location.origin } 
+    });
   }
 
   async function signInWithGitHub() {
-    await supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: window.location.origin } });
+    return await supabase.auth.signInWithOAuth({ 
+      provider: 'github', 
+      options: { redirectTo: window.location.origin } 
+    });
   }
 
   async function signOut() {

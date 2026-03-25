@@ -65,41 +65,28 @@ export function AuthProvider({ children }) {
   }
 
   async function signInWithGoogle() {
-    console.log('[NEXUS] Initiating Google OAuth...');
-    try {
-      const result = await supabase.auth.signInWithOAuth({ 
-        provider: 'google', 
-        options: { redirectTo: window.location.origin } 
-      });
-      if (result.error) {
-        console.error('[NEXUS] Google OAuth Error:', result.error);
-        alert('Google Auth Error: ' + result.error.message);
-      }
-      return result;
-    } catch (err) {
-      console.error('[NEXUS] Google OAuth Exception:', err);
-      alert('Google Auth Exception: ' + err.message);
-      throw err;
-    }
+    console.log('[NEXUS] Initiating Google Login flow...');
+    const { data, error } = await supabase.auth.signInWithOAuth({ 
+      provider: 'google', 
+      options: { 
+        redirectTo: `${window.location.origin}/`,
+        queryParams: { access_type: 'offline', prompt: 'consent' }
+      } 
+    });
+    if (error) console.error('[NEXUS] Google login attempt failed:', error.message);
+    return { data, error };
   }
 
   async function signInWithGitHub() {
-    console.log('[NEXUS] Initiating GitHub OAuth...');
-    try {
-      const result = await supabase.auth.signInWithOAuth({ 
-        provider: 'github', 
-        options: { redirectTo: window.location.origin } 
-      });
-      if (result.error) {
-        console.error('[NEXUS] GitHub OAuth Error:', result.error);
-        alert('GitHub Auth Error: ' + result.error.message);
-      }
-      return result;
-    } catch (err) {
-      console.error('[NEXUS] GitHub OAuth Exception:', err);
-      alert('GitHub Auth Exception: ' + err.message);
-      throw err;
-    }
+    console.log('[NEXUS] Initiating GitHub Login flow...');
+    const { data, error } = await supabase.auth.signInWithOAuth({ 
+      provider: 'github', 
+      options: { 
+        redirectTo: `${window.location.origin}/`
+      } 
+    });
+    if (error) console.error('[NEXUS] GitHub login attempt failed:', error.message);
+    return { data, error };
   }
 
   async function signOut() {

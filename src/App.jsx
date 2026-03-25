@@ -18,13 +18,10 @@ function AppContent() {
   const { user, profile, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [inWorkspace, setInWorkspace] = useState(false);
-  
-  // Auto-redirect to workspace if user is already logged in
-  React.useEffect(() => {
-    if (user && !loading) {
-      setInWorkspace(true);
-    }
-  }, [user, loading]);
+
+  // If user is already logged in, we should be in the workspace (Dashboard)
+  // We use user session as the source of truth for current state
+  const isAuthorized = !!user;
 
   if (loading) {
     return (
@@ -33,15 +30,14 @@ function AppContent() {
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-500 to-cyber-cyan flex items-center justify-center mx-auto mb-4 animate-pulse">
             <span className="text-white font-display font-bold text-lg">N</span>
           </div>
-          <p className="text-slate-400 text-sm">Loading NEXUS...</p>
+          <p className="text-slate-400 text-sm">Authenticating with NEXUS...</p>
         </div>
       </div>
     );
   }
 
-  // If user is logged in, bypass landing page and go straight to workspace
-  // Otherwise, wait for them to click "Enter" on the LandingPage
-  if (!user && !inWorkspace) {
+  // Final check: if no user and they haven't manually clicked 'Enter', show Landing
+  if (!isAuthorized && !inWorkspace) {
     return <LandingPage onEnter={() => setInWorkspace(true)} />;
   }
 

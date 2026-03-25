@@ -39,8 +39,11 @@ function AppContent() {
     );
   }
 
-  // Always show Landing Page first. If logged in, LandingPage will show a 'Go to Dashboard' button.
-  if (!inWorkspace) return <LandingPage onEnter={() => setInWorkspace(true)} />;
+  // If user is logged in, bypass landing page and go straight to workspace
+  // Otherwise, wait for them to click "Enter" on the LandingPage
+  if (!user && !inWorkspace) {
+    return <LandingPage onEnter={() => setInWorkspace(true)} />;
+  }
 
   const renderContent = () => {
     switch (activeTab) {

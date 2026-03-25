@@ -66,22 +66,40 @@ export function AuthProvider({ children }) {
 
   async function signInWithGoogle() {
     console.log('[NEXUS] Initiating Google OAuth...');
-    const result = await supabase.auth.signInWithOAuth({ 
-      provider: 'google', 
-      options: { redirectTo: window.location.origin } 
-    });
-    if (result.error) console.error('[NEXUS] Google OAuth Error:', result.error);
-    return result;
+    try {
+      const result = await supabase.auth.signInWithOAuth({ 
+        provider: 'google', 
+        options: { redirectTo: window.location.origin } 
+      });
+      if (result.error) {
+        console.error('[NEXUS] Google OAuth Error:', result.error);
+        alert('Google Auth Error: ' + result.error.message);
+      }
+      return result;
+    } catch (err) {
+      console.error('[NEXUS] Google OAuth Exception:', err);
+      alert('Google Auth Exception: ' + err.message);
+      throw err;
+    }
   }
 
   async function signInWithGitHub() {
     console.log('[NEXUS] Initiating GitHub OAuth...');
-    const result = await supabase.auth.signInWithOAuth({ 
-      provider: 'github', 
-      options: { redirectTo: window.location.origin } 
-    });
-    if (result.error) console.error('[NEXUS] GitHub OAuth Error:', result.error);
-    return result;
+    try {
+      const result = await supabase.auth.signInWithOAuth({ 
+        provider: 'github', 
+        options: { redirectTo: window.location.origin } 
+      });
+      if (result.error) {
+        console.error('[NEXUS] GitHub OAuth Error:', result.error);
+        alert('GitHub Auth Error: ' + result.error.message);
+      }
+      return result;
+    } catch (err) {
+      console.error('[NEXUS] GitHub OAuth Exception:', err);
+      alert('GitHub Auth Exception: ' + err.message);
+      throw err;
+    }
   }
 
   async function signOut() {

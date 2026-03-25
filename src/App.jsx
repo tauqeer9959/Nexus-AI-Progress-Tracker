@@ -19,43 +19,26 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [inWorkspace, setInWorkspace] = useState(false);
 
-  // Handle URL Redirection without clearing history immediately
+  // Synchronize workspace access with authentication state
   React.useEffect(() => {
-    const isDashboardPath = window.location.pathname === '/dashboard';
-    
-    if (isDashboardPath && user) {
-      console.log('[NEXUS] User on dashboard path and authorized, setting workspace.');
+    if (user) {
       setInWorkspace(true);
     }
   }, [user]);
 
-  // If user is already logged in, we should be in the workspace (Dashboard)
-  // We use user session as the source of truth for current state
-  const isAuthorized = !!user;
-
-  console.log('[NEXUS] Redirection Diagnostics:', {
-    userLoggedIn: isAuthorized,
-    email: user?.email,
-    inWorkspace: inWorkspace,
-    loading: loading,
-    path: window.location.pathname
-  });
-
   if (loading) {
     return (
       <div className="min-h-screen bg-[#020617] flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-500 to-cyber-cyan flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <span className="text-white font-display font-bold text-lg">N</span>
-          </div>
-          <p className="text-slate-400 text-sm">Authenticating with NEXUS...</p>
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary-500/20 border-t-primary-500 rounded-full animate-spin" />
+          <p className="text-slate-400 font-medium">Authenticating with NEXUS...</p>
         </div>
       </div>
     );
   }
 
-  // Final check: if no user and they haven't manually clicked 'Enter', show Landing
-  if (!isAuthorized && !inWorkspace) {
+  // Show Landing Page if not authorized AND not manually entering
+  if (!user && !inWorkspace) {
     return <LandingPage onEnter={() => setInWorkspace(true)} />;
   }
 
@@ -76,21 +59,18 @@ function AppContent() {
           </div>
         );
       default:
-        return (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-            <h2 className="text-3xl font-display font-bold text-white mb-4">Coming Soon</h2>
-            <p className="text-slate-400 max-w-md">This section is under construction. Check back soon!</p>
-          </div>
-        );
+        return <Dashboard setActiveTab={setActiveTab} />;
     }
   };
 
   return (
     <DataProvider>
       <Background3D />
-      <Layout activeTab={activeTab} setActiveTab={setActiveTab}>
-        {renderContent()}
-        <ChatBot />
+      <Layout activeTab={activeTab} setActiveTab={setActiveTab} user={user} profile={profile}>
+        <div className="relative z-10 pt-20">
+          {renderContent()}
+        </div>
+        <ChatBot setActiveTab={setActiveTab} />
       </Layout>
     </DataProvider>
   );

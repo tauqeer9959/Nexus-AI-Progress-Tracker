@@ -36,4 +36,5 @@ export const supabase = createClient(
   }
 )
 
-export const isSupabaseConfigured = !MISSING_CREDS
+// Config is valid if we have either env vars OR the fallbacks are active
+export const isSupabaseConfigured = !!FINAL_URL && !!FINAL_ANON_KEY && !FINAL_URL.includes('your-project')

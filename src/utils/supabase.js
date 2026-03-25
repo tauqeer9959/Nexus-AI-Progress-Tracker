@@ -12,10 +12,17 @@ if (MISSING_CREDS) {
   )
 }
 
+// Fixed Supabase URL for this project
+const FINAL_URL = supabaseUrl && !supabaseUrl.includes('your-project')
+  ? supabaseUrl
+  : 'https://ktmyezkkzqscgpmynnql.supabase.co';
+
 // Hardcoded Anon Key for this project (Safe to be public in frontend)
 const FINAL_ANON_KEY = supabaseAnonKey && !supabaseAnonKey.includes('your-key')
   ? supabaseAnonKey
   : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0bXllemtrenFzY2dwbXlubnFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNjU0MDAsImV4cCI6MjA4OTk0MTQwMH0.B5a78LchYU7bXcj_x84jF2D-9vGE5NKcg05FtJXlYEg';
+
+console.log('[NEXUS] Initializing Supabase with URL:', FINAL_URL);
 
 export const supabase = createClient(
   FINAL_URL,

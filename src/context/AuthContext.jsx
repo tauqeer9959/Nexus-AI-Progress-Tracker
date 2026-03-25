@@ -73,11 +73,7 @@ export function AuthProvider({ children }) {
   }
 
   async function signInWithGoogle() {
-    const isLocal = window.location.origin.includes('localhost');
-    const REDIRECT_URL = isLocal 
-      ? 'http://localhost:5173/dashboard' 
-      : 'https://nexusaiprogresstracker.vercel.app/dashboard';
-
+    const REDIRECT_URL = 'https://nexusaiprogresstracker.vercel.app/dashboard';
     console.log('[NEXUS] Initiating Google Login flow with redirect:', REDIRECT_URL);
     const { data, error } = await supabase.auth.signInWithOAuth({ 
       provider: 'google', 
@@ -91,11 +87,7 @@ export function AuthProvider({ children }) {
   }
 
   async function signInWithGitHub() {
-    const isLocal = window.location.origin.includes('localhost');
-    const REDIRECT_URL = isLocal 
-      ? 'http://localhost:5173/dashboard' 
-      : 'https://nexusaiprogresstracker.vercel.app/dashboard';
-
+    const REDIRECT_URL = 'https://nexusaiprogresstracker.vercel.app/dashboard';
     console.log('[NEXUS] Initiating GitHub Login flow with redirect:', REDIRECT_URL);
     const { data, error } = await supabase.auth.signInWithOAuth({ 
       provider: 'github', 

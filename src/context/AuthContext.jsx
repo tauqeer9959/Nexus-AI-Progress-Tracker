@@ -65,27 +65,29 @@ export function AuthProvider({ children }) {
   }
 
   async function signInWithGoogle() {
-    console.log('[NEXUS] Initiating Google Login flow...');
+    const REDIRECT_URL = window.location.origin + '/dashboard';
+    console.log('[NEXUS] Initiating Google Login flow with redirect:', REDIRECT_URL);
     const { data, error } = await supabase.auth.signInWithOAuth({ 
       provider: 'google', 
       options: { 
-        redirectTo: `${window.location.origin}/`,
+        redirectTo: REDIRECT_URL,
         queryParams: { access_type: 'offline', prompt: 'consent' }
       } 
     });
-    if (error) console.error('[NEXUS] Google login attempt failed:', error.message);
+    if (error) console.error('[NEXUS] Google login error returned:', error.message);
     return { data, error };
   }
 
   async function signInWithGitHub() {
-    console.log('[NEXUS] Initiating GitHub Login flow...');
+    const REDIRECT_URL = window.location.origin + '/dashboard';
+    console.log('[NEXUS] Initiating GitHub Login flow with redirect:', REDIRECT_URL);
     const { data, error } = await supabase.auth.signInWithOAuth({ 
       provider: 'github', 
       options: { 
-        redirectTo: `${window.location.origin}/`
+        redirectTo: REDIRECT_URL
       } 
     });
-    if (error) console.error('[NEXUS] GitHub login attempt failed:', error.message);
+    if (error) console.error('[NEXUS] GitHub login error returned:', error.message);
     return { data, error };
   }
 

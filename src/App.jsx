@@ -19,22 +19,13 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [inWorkspace, setInWorkspace] = useState(false);
 
-  // Handle URL Cleanup and Redirection
+  // Handle URL Redirection without clearing history immediately
   React.useEffect(() => {
-    const path = window.location.pathname;
-    const search = window.location.search;
-    const hash = window.location.hash;
-
-    // If we have auth data in URL, it's an OAuth return
-    const isOAuthReturn = search.includes('code=') || hash.includes('access_token=');
+    const isDashboardPath = window.location.pathname === '/dashboard';
     
-    if (isOAuthReturn || path === '/dashboard') {
-      console.log('[NEXUS] Detected OAuth return or dashboard path');
-      if (user) {
-        setInWorkspace(true);
-        // Clean the URL so refresh doesn't keep /dashboard or tokens
-        window.history.replaceState({}, document.title, '/');
-      }
+    if (isDashboardPath && user) {
+      console.log('[NEXUS] User on dashboard path and authorized, setting workspace.');
+      setInWorkspace(true);
     }
   }, [user]);
 

@@ -23,6 +23,11 @@ export function AuthProvider({ children }) {
       if (currentUser) {
         setUser(currentUser);
         await fetchProfile(currentUser.id, currentUser);
+        
+        // Safe URL cleanup after session is confirmed
+        if (event === 'SIGNED_IN' && (window.location.search.includes('code=') || window.location.hash.includes('access_token='))) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
       } else {
         setUser(null);
         setProfile(null);

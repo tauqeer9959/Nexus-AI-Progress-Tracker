@@ -10,24 +10,25 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) fetchProfile(session.user.id);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) fetchProfile(currentUser.id, currentUser);
       else setLoading(false);
     });
     
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log(`[NEXUS] Auth Event: ${event}`);
+      const currentUser = session?.user ?? null;
       
-      if (session?.user) {
-        setUser(session.user);
-        await fetchProfile(session.user.id);
+      if (currentUser) {
+        setUser(currentUser);
+        await fetchProfile(currentUser.id, currentUser);
       } else {
         setUser(null);
         setProfile(null);
         setLoading(false);
       }
 
-      // If we just signed in (e.g. following an OAuth redirect), ensure we aren't stuck loading
       if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
         setLoading(false);
       }
@@ -35,25 +36,36 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  async function fetchProfile(userId) {
-    const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
-    if (error && error.code === 'PGRST116') {
-      // Profile doesn't exist, create it (likely a new OAuth user)
-      const { data: newData, error: createError } = await supabase
-        .from('profiles')
-        .upsert({ 
-          id: userId, 
-          full_name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User',
-          updated_at: new Date().toISOString() 
-        })
-        .select()
-        .single();
+  async function fetchProfile(userId, userData) {
+    try {
+      const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
       
-      if (!createError) setProfile(newData);
-    } else {
-      setProfile(data);
+      if (error && error.code === 'PGRST116') {
+        console.log('[NEXUS] Profile not found, creating new entry...');
+        const name = userData?.user_metadata?.full_name || userData?.email?.split('@')[0] || 'User';
+        
+        const { data: newData, error: createError } = await supabase
+          .from('profiles')
+          .upsert({ 
+            id: userId, 
+            full_name: name,
+            updated_at: new Date().toISOString() 
+          })
+          .select()
+          .single();
+        
+        if (createError) console.error('[NEXUS] Profile upsert failed:', createError);
+        else setProfile(newData);
+      } else if (error) {
+        console.error('[NEXUS] Profile fetch error:', error);
+      } else {
+        setProfile(data);
+      }
+    } catch (err) {
+      console.error('[NEXUS] fetchProfile exception:', err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function signUpWithEmail(email, password, fullName) {

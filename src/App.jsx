@@ -42,6 +42,14 @@ function AppContent() {
   // We use user session as the source of truth for current state
   const isAuthorized = !!user;
 
+  console.log('[NEXUS] Redirection Diagnostics:', {
+    userLoggedIn: isAuthorized,
+    email: user?.email,
+    inWorkspace: inWorkspace,
+    loading: loading,
+    path: window.location.pathname
+  });
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#020617] flex items-center justify-center">

@@ -18,6 +18,13 @@ function AppContent() {
   const { user, profile, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [inWorkspace, setInWorkspace] = useState(false);
+  
+  // Auto-redirect to workspace if user is already logged in
+  React.useEffect(() => {
+    if (user && !loading) {
+      setInWorkspace(true);
+    }
+  }, [user, loading]);
 
   if (loading) {
     return (

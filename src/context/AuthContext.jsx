@@ -65,17 +65,23 @@ export function AuthProvider({ children }) {
   }
 
   async function signInWithGoogle() {
-    return await supabase.auth.signInWithOAuth({ 
+    console.log('[NEXUS] Initiating Google OAuth...');
+    const result = await supabase.auth.signInWithOAuth({ 
       provider: 'google', 
       options: { redirectTo: window.location.origin } 
     });
+    if (result.error) console.error('[NEXUS] Google OAuth Error:', result.error);
+    return result;
   }
 
   async function signInWithGitHub() {
-    return await supabase.auth.signInWithOAuth({ 
+    console.log('[NEXUS] Initiating GitHub OAuth...');
+    const result = await supabase.auth.signInWithOAuth({ 
       provider: 'github', 
       options: { redirectTo: window.location.origin } 
     });
+    if (result.error) console.error('[NEXUS] GitHub OAuth Error:', result.error);
+    return result;
   }
 
   async function signOut() {

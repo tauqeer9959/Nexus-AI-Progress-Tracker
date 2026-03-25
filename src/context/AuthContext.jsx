@@ -15,12 +15,20 @@ export function AuthProvider({ children }) {
       else setLoading(false);
     });
     
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setUser(session?.user ?? null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log(`[NEXUS] Auth Event: ${event}`);
+      
       if (session?.user) {
+        setUser(session.user);
         await fetchProfile(session.user.id);
       } else {
+        setUser(null);
         setProfile(null);
+        setLoading(false);
+      }
+
+      // If we just signed in (e.g. following an OAuth redirect), ensure we aren't stuck loading
+      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
         setLoading(false);
       }
     });

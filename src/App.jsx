@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { DataProvider } from './context/DataContext';
 import LandingPage from './pages/LandingPage';
@@ -19,12 +19,16 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [inWorkspace, setInWorkspace] = useState(false);
 
-  // Synchronize workspace access with authentication state
-  React.useEffect(() => {
+  // Automatically enter workspace whenever a user session exists.
+  // This covers: email login, OAuth redirect-back, and page reload with an active session.
+  useEffect(() => {
     if (user) {
       setInWorkspace(true);
+    } else if (!loading) {
+      // User is definitely logged out and not loading — exit workspace
+      setInWorkspace(false);
     }
-  }, [user]);
+  }, [user, loading]);
 
   if (loading) {
     return (
@@ -37,7 +41,7 @@ function AppContent() {
     );
   }
 
-  // Show Landing Page if not authorized AND not manually entering
+  // Show Landing Page only when not authenticated and not in workspace
   if (!user && !inWorkspace) {
     return <LandingPage onEnter={() => setInWorkspace(true)} />;
   }
@@ -51,7 +55,7 @@ function AppContent() {
       case 'edu': return <EduNavigator />;
       case 'ai': return <AIMentor />;
       case 'settings': return <ProfileSettings />;
-      case 'admin': 
+      case 'admin':
         return profile?.role === 'admin' ? <Admin /> : (
           <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
             <h2 className="text-3xl font-display font-bold text-rose-500 mb-4">Access Denied</h2>
